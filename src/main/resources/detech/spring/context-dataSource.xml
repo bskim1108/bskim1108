@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 	xmlns="http://www.springframework.org/schema/beans"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans 
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/context
+							http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<context:property-placeholder location="classpath:/detech/properties/mysql.properties"/>
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${mysql.DriverClassName}" />
+		<property name="url" value="${mysql.Url}" />
+		<property name="username" value="${mysql.UserName}" />
+		<property name="password" value="${mysql.Password}" />
+	</bean>
+	
+	<context:component-scan base-package="com.detech.cms" />
+
+	<!-- Mybatis setup for Mybatis Database Layer -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">		
+		<property name="dataSource" ref="dataSource"/>
+		<property name="configLocation" value="classpath:/detech/spring/context-myBatis.xml" />
+		
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:/mapper/*_SQL.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- MapperConfigurer setup for MyBatis Database Layer -->
+	<bean class="egovframework.rte.psl.dataaccess.mapper.MapperConfigurer">
+		<property name="basePackage">
+		 	<value>com.detech.cms.web.service</value>
+		</property>
+	</bean>
+
+	<!-- Mybatis Session Template -->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSession"/>
+	</bean>
+
+	<bean 	id="transactionManager"
+			class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+</beans>

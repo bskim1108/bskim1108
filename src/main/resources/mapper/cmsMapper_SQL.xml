@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.detech.cms.web.service.CmsMapper">
+
+	<select id="getMenuList" parameterType="String" resultType="egovMap">
+		SELECT * 
+		FROM de_tb_menu
+		WHERE 1=1
+			<if test ='_parameter != ""'>
+			AND use_yn = #{useYn}
+			</if>
+	</select>
+
+	<select id="getAuthList" parameterType="String" resultType="egovMap">
+		SELECT * 
+		FROM de_tb_auth
+		WHERE 1=1
+			<if test ='_parameter != ""'>
+			AND use_yn = #{useYn}
+			</if>
+	</select>
+	<select id="getMenuListAcctoAuth" resultType="egovMap">
+		SELECT a.* 
+		FROM de_tb_auth_menu_map a
+			INNER JOIN de_tb_menu b ON a.menu_code = b.menu_code
+			INNER JOIN de_tb_auth c ON a.auth_code = c.auth_code
+		WHERE 1=1
+			AND b.use_yn = "Y"
+			AND c.use_yn = "Y"
+		ORDER BY menu_code, auth_code
+	</select>
+	<delete id="deleteMenu" parameterType="hashMap">
+	    DELETE FROM de_tb_menu
+	    WHERE menu_code = #{menuCode}
+	</delete>
+	<update id="modifyMenu" parameterType="hashMap">
+	    UPDATE de_tb_menu
+	    SET
+	    	menu_name = #{menuName}
+	    	, menu_path = #{menuPath}
+	    	, menu_flag = #{menuFlag}
+	    	, use_yn = #{useYn}
+	    WHERE
+	    	menu_code = #{menuCode}
+	</update>
+	<select id="getNewMenuCode" resultType="String">
+		SELECT concat('menu',lpad(ifnull(a.newMenuCode,0)+1,3,0))
+		FROM (
+			SELECT 
+				max(substr(menu_code,5)) newMenuCode 
+			FROM de_tb_menu
+			) a 	
+	</select>
+	<insert id="insertMenu" parameterType="hashMap">
+		INSERT INTO de_tb_menu(
+			menu_code
+			,menu_name
+			,menu_path
+			,menu_flag
+			,use_yn
+		)
+		VALUES(
+			#{menuCode}
+			,#{menuName}
+			,#{menuPath}
+			,#{menuFlag}
+			,#{useYn}
+		)
+	</insert>
+	
+	<delete id="deleteAuth" parameterType="hashMap">
+	    DELETE FROM de_tb_auth
+	    WHERE auth_code = #{authCode}
+	</delete>
+	<update id="modifyAuth" parameterType="hashMap">
+	    UPDATE de_tb_auth
+	    SET
+	    	auth_name = #{authName},
+	    	use_yn = #{useYn}
+	    WHERE
+	    	auth_code = #{authCode}
+	</update>
+	<select id="getNewAuthCode" resultType="String">
+		SELECT concat('auth',lpad(ifnull(a.newAuthCode,0)+1,2,0))
+		FROM (
+			SELECT 
+				max(substr(auth_code,5)) newAuthCode 
+			FROM de_tb_auth
+			) a 	
+	</select>
+	<insert id="insertAuth" parameterType="hashMap">
+		INSERT INTO de_tb_auth(
+			auth_code
+			,auth_name
+			,use_yn
+		)
+		VALUES(
+			#{authCode}
+			,#{authName}
+			,#{useYn}
+		)
+	</insert>
+	<delete id="deleteXTable">
+	    DELETE FROM de_tb_auth_menu_map
+	</delete>
+	<insert id="insertXTable" parameterType="hashMap">
+	    INSERT INTO de_tb_auth_menu_map(menu_code, auth_code)
+	    VALUES(#{menuCode},#{authCode})
+	</insert>
+</mapper>

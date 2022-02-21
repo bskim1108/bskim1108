@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.detech.cms.web.service.LoginMapper">
+	
+	<select id="getUserId" parameterType="hashMap" resultType="int">
+		SELECT count(user_id)
+		FROM de_tb_user
+		WHERE user_id = #{userId}
+	</select>
+	<select id="getUserInfo" parameterType="hashMap" resultType="int">
+		SELECT count(user_id)
+		FROM de_tb_user
+		WHERE user_id = #{userId}
+			AND password = #{password}
+	</select>
+	<select id="getMenuListbyAuth" parameterType="hashMap" resultType="egovMap">
+		SELECT b.*
+		FROM de_tb_auth_menu_map a
+			LEFT JOIN de_tb_menu b ON a.menu_code = b.menu_code 
+		WHERE
+			a.auth_code = #{authCode}
+			AND b.use_yn = "Y"
+	</select>
+</mapper>

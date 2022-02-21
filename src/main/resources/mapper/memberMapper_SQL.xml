@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.detech.cms.web.service.MemberMapper">
+
+	<select id="getMemberInfo" resultType="egovMap">
+		SELECT a.*, b.auth_code
+		FROM de_tb_user a
+			LEFT JOIN de_tb_user_auth_map b ON a.user_id = b.user_id
+		WHERE
+			a.use_yn = "Y"
+			<if test='userId != null and userId != ""'>
+			AND a.user_id = #{userId} 
+			</if>		
+	</select>
+	<select id="getComboAuth" resultType="egovMap">
+		SELECT *
+		FROM de_tb_auth
+		WHERE use_yn = 'Y'
+	</select>
+	<update id="updateAuth" parameterType="hashMap">
+		UPDATE de_tb_user_auth_map
+		SET
+			auth_code = #{authCode}
+		WHERE
+			user_id = #{userId}
+	</update>
+</mapper>
